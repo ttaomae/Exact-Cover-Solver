@@ -44,7 +44,7 @@ public final class Pentomino extends Polyomino
         blocks.add(new Block(0, 2));
         blocks.add(new Block(0, 3));
         blocks.add(new Block(0, 4));
-        blocks.add(new Block(2, 4));
+        blocks.add(new Block(1, 4));
 
         return new Polyomino(blocks);
     }
