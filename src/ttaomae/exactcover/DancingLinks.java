@@ -11,7 +11,7 @@ public class DancingLinks
 
     /**
      * Constructs a new DancingLinks from an ExactCover.
-     * 
+     *
      * @param ec
      */
     public DancingLinks(ExactCover ec)
@@ -187,7 +187,6 @@ public class DancingLinks
                 if (prev == null) {
                     newNode.left = newNode;
                     newNode.right = newNode;
-                    prev = newNode;
                 }
                 else {
                     newNode.left = prev;
@@ -195,6 +194,7 @@ public class DancingLinks
                     prev.right.left = newNode;
                     prev.right = newNode;
                 }
+                prev = newNode;
             }
         }
     }
