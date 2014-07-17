@@ -1,15 +1,15 @@
 package ttaomae.exactcover;
 
-public class FileFormatException extends Exception
+public class DataFormatException extends Exception
 {
     private static final long serialVersionUID = 1L;
 
-    public FileFormatException()
+    public DataFormatException()
     {
         super();
     }
 
-    public FileFormatException(String message)
+    public DataFormatException(String message)
     {
         super(message);
     }

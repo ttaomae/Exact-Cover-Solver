@@ -10,28 +10,14 @@ public class DancingLinks
     private ColumnNode header;
 
     /**
-     * Constructs a new DancingLinks with the specified column names and rows.
-     *
-     * @param names names for columns
-     * @param rows
+     * Constructs a new DancingLinks from an ExactCover.
+     * 
+     * @param ec
      */
-    public DancingLinks(String[] names, Set<BitSet> rows)
+    public DancingLinks(ExactCover ec)
     {
-        if (names == null || rows == null) {
-            throw new IllegalArgumentException("arguments must not be null");
-        }
-        if (names.length == 0) {
-            throw new IllegalArgumentException("names must have at least one column");
-        }
-
-        if (rows.size() == 0) {
-            throw new IllegalArgumentException("there must be at least one row");
-        }
-        for (BitSet row : rows) {
-            if (row.length() > names.length) {
-                throw new IllegalArgumentException("length of each row must not be longer than names");
-            }
-        }
+        String[] names = ec.getNames();
+        Set<BitSet> rows = ec.getRows();
 
         this.header = new ColumnNode("header");
         this.header.left = this.header;
@@ -55,56 +41,6 @@ public class DancingLinks
 
         for (BitSet row : rows) {
             addRow(row);
-        }
-    }
-
-    /**
-     * Constructs a new DancingLinks with default column names.
-     *
-     * @param rows
-     */
-    public DancingLinks(Set<BitSet> rows)
-    {
-        this(getColumnNames(getMaxColumns(rows)), rows);
-    }
-
-    private static int getMaxColumns(Set<BitSet> rows)
-    {
-        assert (rows.size() > 0);
-
-        int max = 0;
-        for (BitSet row : rows) {
-            max = Math.max(max, row.length());
-        }
-
-        return max;
-    }
-
-    private static String[] getColumnNames(int numColumns)
-    {
-        assert (numColumns >= 0);
-
-        String[] names = new String[numColumns];
-
-        for (int col = 0; col < names.length; col++) {
-            names[col] = getColumnName(col);
-        }
-
-        return names;
-    }
-
-    private static String getColumnName(int col)
-    {
-        assert (col > 0);
-
-        final int numChars = 1 + ('Z' - 'A');
-
-        if (col < numChars) {
-            return String.valueOf((char) ('A' + col));
-        }
-        else {
-            return getColumnName((col / numChars) - 1)
-                   + getColumnName(col % numChars);
         }
     }
 
@@ -310,6 +246,9 @@ public class DancingLinks
                 sb.append(toRowString(row));
                 sb.append("\n");
             }
+
+            // delete extra newline
+            sb.deleteCharAt(sb.length() - 1);
 
             return sb.toString();
         }
