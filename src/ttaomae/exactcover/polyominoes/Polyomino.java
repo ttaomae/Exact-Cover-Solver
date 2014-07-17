@@ -186,7 +186,7 @@ public class Polyomino
         return true;
     }
 
-    public static class Block
+    public static class Block implements Comparable<Block>
     {
         private final int x;
         private final int y;
@@ -243,6 +243,28 @@ public class Polyomino
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public int compareTo(Block o)
+        {
+            if (this.x < o.x) {
+                return -1;
+            }
+            else if (this.x > o.x) {
+                return 1;
+            }
+            // this.x == o.x
+            else if (this.y < o.y) {
+                return -1;
+            }
+            else if (this.y > o.y) {
+                return 1;
+            }
+            // x and y are equal
+            else {
+                return 0;
+            }
         }
     }
 }
