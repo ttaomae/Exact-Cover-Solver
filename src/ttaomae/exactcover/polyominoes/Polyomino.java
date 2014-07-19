@@ -13,19 +13,19 @@ public class Polyomino
     private final int height;
 
     /**
-     * Constructs a new polyomino with the blocks at the specified points
-     * shifted towards (0, 0) if necessary, such that the minimum x-coordinate
-     * and minimum y-coordinate of any point is 0.
+     * Constructs a new polyomino with the specified blocks shifted towards
+     * (0,0) if necessary, such that the minimum x-coordinate and minimum
+     * y-coordinate of any block is 0.
      *
      * @param blocks
      */
     protected Polyomino(Collection<Block> blocks)
     {
         if (blocks == null) {
-            throw new IllegalArgumentException("points should not be null");
+            throw new IllegalArgumentException("blocks should not be null");
         }
         if (blocks.isEmpty()) {
-            throw new IllegalArgumentException("points should not be empty");
+            throw new IllegalArgumentException("blocks should not be empty");
         }
 
         this.blocks = new HashSet<>();
@@ -60,32 +60,32 @@ public class Polyomino
 
     private Polyomino transpose()
     {
-        Collection<Block> newPoints = new ArrayList<>();
-        for (Block b : blocks) {
-            newPoints.add(new Block(b.y, b.x));
+        Collection<Block> newBlocks = new ArrayList<>();
+        for (Block b : this.blocks) {
+            newBlocks.add(new Block(b.y, b.x));
         }
 
-        return new Polyomino(newPoints);
+        return new Polyomino(newBlocks);
     }
 
     public Polyomino flipVerticalAxis()
     {
-        Collection<Block> newPoints = new ArrayList<>();
-        for (Block b : blocks) {
-            newPoints.add(new Block((this.width - 1) - b.x, b.y));
+        Collection<Block> newBlocks = new ArrayList<>();
+        for (Block b : this.blocks) {
+            newBlocks.add(new Block((this.width - 1) - b.x, b.y));
         }
 
-        return new Polyomino(newPoints);
+        return new Polyomino(newBlocks);
     }
 
     public Polyomino flipHorizontalAxis()
     {
-        Collection<Block> newPoints = new ArrayList<>();
-        for (Block b : blocks) {
-            newPoints.add(new Block(b.x, (this.height - 1) - b.y));
+        Collection<Block> newBlocks = new ArrayList<>();
+        for (Block b : this.blocks) {
+            newBlocks.add(new Block(b.x, (this.height - 1) - b.y));
         }
 
-        return new Polyomino(newPoints);
+        return new Polyomino(newBlocks);
     }
 
     public Polyomino rotateCW()
