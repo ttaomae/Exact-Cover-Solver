@@ -90,12 +90,12 @@ public class Polyomino
 
     public Polyomino rotateCW()
     {
-        return this.transpose().flipHorizontalAxis();
+        return this.transpose().flipVerticalAxis();
     }
 
     public Polyomino rotateCCW()
     {
-        return this.transpose().flipVerticalAxis();
+        return this.transpose().flipHorizontalAxis();
     }
 
     public Set<Polyomino> getFreeTransformations()
