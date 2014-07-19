@@ -170,8 +170,6 @@ public class Polyomino
             return false;
         }
         if (getClass() != obj.getClass()) {
-            System.out.println(getClass());
-            System.out.println(obj.getClass());
             return false;
         }
         Polyomino other = (Polyomino) obj;
