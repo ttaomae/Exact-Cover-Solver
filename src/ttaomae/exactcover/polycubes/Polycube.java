@@ -219,6 +219,9 @@ public class Polycube
             sb.append("\n");
         }
 
+        // delete extra newline
+        sb.deleteCharAt(sb.length() - 1);
+
         return sb.toString();
     }
 
