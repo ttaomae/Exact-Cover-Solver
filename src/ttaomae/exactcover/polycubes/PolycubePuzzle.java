@@ -74,9 +74,9 @@ public class PolycubePuzzle
 
         for(Entry<String, Polycube> piece : this.pieces.entrySet()) {
             for (Polycube rotation : piece.getValue().getRotations()) {
-                for (int x = this.minX; x < this.maxX; x++) {
-                    for (int y = this.minY; y < this.maxY; y++) {
-                        for (int z = this.minZ; z < this.maxZ; z++) {
+                for (int x = this.minX; x <= this.maxX; x++) {
+                    for (int y = this.minY; y <= this.maxY; y++) {
+                        for (int z = this.minZ; z <= this.maxZ; z++) {
                             BitSet row = polycubeToBitSet(names, piece.getKey(), rotation, x, y, z);
                             if (row != null) {
                                 rows.add(row);

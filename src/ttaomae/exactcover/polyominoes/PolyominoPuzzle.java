@@ -90,8 +90,8 @@ public class PolyominoPuzzle
         Set<BitSet> rows = new HashSet<>();
         for (Entry<String, Polyomino> piece : this.pieces.entrySet()) {
             for (Polyomino transformation : piece.getValue().getFreeTransformations()) {
-                for (int x = this.minX; x < this.maxX; x++) {
-                    for (int y = this.minY; y < this.maxY; y++) {
+                for (int x = this.minX; x <= this.maxX; x++) {
+                    for (int y = this.minY; y <= this.maxY; y++) {
                         BitSet row = polyominoToBitSet(names, piece.getKey(), transformation, x, y);
                         if (row != null) {
                             rows.add(row);
@@ -108,7 +108,7 @@ public class PolyominoPuzzle
     {
         BitSet s = new BitSet();
         // set column for name of piece
-         s.set(columnIndex(columns, name));
+        s.set(columnIndex(columns, name));
         for (Block b : p.getBlocks()) {
             // add x and y
             String bs = new Block(b.getX() + x, b.getY() + y).toString().replaceAll("\\s", "");
