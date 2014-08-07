@@ -76,8 +76,15 @@ public class PolyominoPuzzle
         }
     }
 
-    public List<Solution> solve()
+    public List<Solution> solve(int nThreads, int depth)
     {
+        if (nThreads < 1) {
+            throw new IllegalArgumentException("numThreads must be positive");
+        }
+        if (depth < 0) {
+            throw new IllegalArgumentException("depth must be non-negative");
+        }
+
         List<String> names = new ArrayList<>();
 
         for (String s : this.pieces.keySet()) {
@@ -101,7 +108,21 @@ public class PolyominoPuzzle
             }
         }
 
-        return new DancingLinks(new ExactCover(names.toArray(new String[0]), rows)).getSolutions();
+        if (nThreads == 1) {
+            return new DancingLinks(
+                        new ExactCover(names.toArray(new String[0]), rows))
+                        .getSolutions();
+        }
+        else {
+            return new DancingLinks(
+                    new ExactCover(names.toArray(new String[0]), rows))
+                    .getSolutions(nThreads, depth);
+        }
+    }
+
+    public List<Solution> solve()
+    {
+        return solve(1, 0);
     }
 
     private BitSet polyominoToBitSet(List<String> columns, String name, Polyomino p, int x, int y)

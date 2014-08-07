@@ -2,12 +2,23 @@ package ttaomae.exactcover;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class DancingLinks
 {
     private ColumnNode header;
+    /**
+     * A copy of the ExactCover so that it is possible to create a duplicate
+     * DancingLinks.
+     */
+    private ExactCover ec;
 
     /**
      * Constructs a new DancingLinks from an ExactCover.
@@ -16,6 +27,7 @@ public class DancingLinks
      */
     public DancingLinks(ExactCover ec)
     {
+        this.ec = ec;
         String[] names = ec.getNames();
         Set<BitSet> rows = ec.getRows();
 
@@ -46,14 +58,90 @@ public class DancingLinks
 
     public List<Solution> getSolutions()
     {
-        List<Solution> solutions = new ArrayList<>();
-        return search(0, solutions, new ArrayList<Node>());
+        return search(0, 0, new ArrayList<Solution>(), new ArrayList<Node>());
     }
 
-    private List<Solution> search(int k,  List<Solution> solutions, List<Node> partialSolution)
+    public List<Solution> getSolutions(int nThreads, int depth)
     {
-        // no columns left; found solution
-        if (this.header.right == this.header) {
+        if (nThreads < 1) {
+            throw new IllegalArgumentException("nThreads must be positive");
+        }
+        if (depth < 0) {
+            throw new IllegalArgumentException("depth must be non-negative");
+        }
+
+        if (nThreads == 1) {
+            return getSolutions();
+        }
+
+        // get list of partial solutions up to 'depth'
+        List<Solution> partialSolutions
+            = search(0, depth, new ArrayList<Solution>(), new ArrayList<Node>());
+
+        // create a new thread pool
+        ExecutorService threadPool = Executors.newFixedThreadPool(nThreads);
+        List<Future<List<Solution>>> solutions = new ArrayList<>();
+
+        for (final Solution partialSolution : partialSolutions) {
+            // create a Callable for each partial solution
+            Callable<List<Solution>> task = new Callable<List<Solution>>() {
+                @Override
+                public List<Solution> call()
+                {
+                    // create a new DancingLinks with the row/columns of the
+                    // partial solution covered
+                    DancingLinks dl = new DancingLinks(DancingLinks.this.ec);
+                    dl.cover(partialSolution.rows);
+
+                    // get solutions for partially covered DancingLinks
+                    List<Solution> rest = dl.search(0, 0,
+                            new ArrayList<Solution>(), new ArrayList<Node>());
+
+                    List<Solution> result = new ArrayList<>();
+                    for (Solution s : rest) {
+                        // combine the two partial results into a single solution
+                        s.rows.addAll(partialSolution.rows);
+                        result.add(s);
+                    }
+
+                    return result;
+                }
+            };
+
+            solutions.add(threadPool.submit(task));
+        }
+
+        // put the results from each task into the final result
+        List<Solution> finalResult = new ArrayList<>();
+        for (Future<List<Solution>> f : solutions) {
+            try {
+                // get the results of each task
+                List<Solution> result = f.get();
+                // add each solution to the final result
+                for (Solution s : result) {
+                    finalResult.add(s);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        threadPool.shutdown();
+
+        return finalResult;
+    }
+
+    private List<Solution> search(int k, int depth, List<Solution> solutions,
+                                  List<Node> partialSolution)
+    {
+        // depth is the maximum depth to search before terminating
+        // if depth is 0, then perform complete search
+        assert depth >= 0;
+
+        // reached search depth
+        // or no columns left -> found solution
+        if ((depth != 0 && k >= depth) || this.header.right == this.header) {
             List<Node> solution = new ArrayList<>(partialSolution.subList(0, k));
             solutions.add(new Solution(solution));
             return solutions;
@@ -82,7 +170,7 @@ public class DancingLinks
             }
 
             // search for next column
-            search(k + 1, solutions, partialSolution);
+            search(k + 1, depth, solutions, partialSolution);
 
             // uncover each row that we covered from before the recursive search
             r = partialSolution.get(k);
@@ -140,6 +228,29 @@ public class DancingLinks
                 j = j.right;
             }
             i = i.down;
+        }
+    }
+
+    private void cover(List<Node> rows)
+    {
+        // create a set containing all columns in all rows
+        Set<String> columns = new HashSet<>();
+        for (Node row : rows) {
+            while (columns.add(row.column.name)) {
+                row = row.right;
+            }
+        }
+
+        for (String c : columns) {
+            ColumnNode h = (ColumnNode) this.header.right;
+
+            while (h != this.header) {
+                if (h.name.equals(c)) {
+                    cover(h);
+                    break;
+                }
+                h = (ColumnNode) h.right;
+            }
         }
     }
 
