@@ -54,6 +54,10 @@ public class TetrisCubeSolver
                 output.println(s + "\n");
             }
         }
+
+        if (output != null) {
+            output.close();
+        }
     }
 
     private static void printUsage()

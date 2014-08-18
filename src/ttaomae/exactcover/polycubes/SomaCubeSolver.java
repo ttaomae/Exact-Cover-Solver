@@ -54,6 +54,10 @@ public class SomaCubeSolver
                 output.println(s + "\n");
             }
         }
+
+        if (output != null) {
+            output.close();
+        }
     }
 
     private static void printUsage()
